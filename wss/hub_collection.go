@@ -26,11 +26,13 @@ func (hc *HubCollection) NewHub(conn *websocket.Conn) *Hub {
 	hc.mutex.Lock()
 	defer hc.mutex.Unlock()
 
+	concurrent := NewConcurrentWebSocket(conn)
 	hub := Hub{
 		id:                  ksuid.New(),
-		ConcurrentWebSocket: ConcurrentWebSocket{WsConn: conn},
+		ConcurrentWebSocket: concurrent,
 		connPool:            make(map[ksuid.KSUID]*ProxyServer),
 	}
+	hub.ConcurrentWebSocket.start()
 
 	hc.hubs[hub.id] = &hub
 	return &hub

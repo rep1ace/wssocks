@@ -235,7 +235,7 @@ func (hdl *Handles) StartClient(c *Options, once *sync.Once) {
 			Info("listening on local address for incoming proxy requests.")
 		hdl.eg.Go(func() error {
 			defer once.Do(closeAll)
-			handle := wss.NewHttpProxy(hdl.wsc, record)
+			handle := wss.NewHttpProxy(wss.NewStaticWebSocketClientProvider(hdl.wsc), record)
 			hdl.httpServer = &http.Server{Addr: c.LocalHttpAddr, Handler: &handle}
 			if err := hdl.httpServer.ListenAndServe(); err != nil {
 				return err
@@ -248,7 +248,7 @@ func (hdl *Handles) StartClient(c *Options, once *sync.Once) {
 	hdl.cl = wss.NewClient()
 	hdl.eg.Go(func() error {
 		defer once.Do(closeAll)
-		if err := hdl.cl.ListenAndServe(record, hdl.wsc, c.LocalSocks5Addr, c.HttpEnabled, func() {
+		if err := hdl.cl.ListenAndServe(record, wss.NewStaticWebSocketClientProvider(hdl.wsc), c.LocalSocks5Addr, c.HttpEnabled, func() {
 			if c.HttpEnabled {
 				log.WithField("socks5 listen address", c.LocalSocks5Addr).
 					WithField("https listen address", c.LocalSocks5Addr).
@@ -265,7 +265,6 @@ func (hdl *Handles) StartClient(c *Options, once *sync.Once) {
 
 	hdl.closed = false
 }
-
 
 // Wait waits an error in client connection.
 // If the connection lost or any other connection error happens, Wait will return an error.
