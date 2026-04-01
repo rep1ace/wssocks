@@ -2,7 +2,7 @@ package term_view
 
 import (
 	"fmt"
-	"github.com/genshen/wssocks/wss"
+	"github.com/rep1ace/wssocks/wss"
 	"github.com/sirupsen/logrus"
 	"golang.org/x/crypto/ssh/terminal"
 	"os"

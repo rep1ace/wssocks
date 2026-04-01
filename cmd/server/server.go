@@ -8,9 +8,9 @@ import (
 	"strings"
 
 	"github.com/genshen/cmds"
-	_ "github.com/genshen/wssocks/cmd/server/statik"
-	"github.com/genshen/wssocks/wss"
-	"github.com/genshen/wssocks/wss/status"
+	_ "github.com/rep1ace/wssocks/cmd/server/statik"
+	"github.com/rep1ace/wssocks/wss"
+	"github.com/rep1ace/wssocks/wss/status"
 	"github.com/rakyll/statik/fs"
 	log "github.com/sirupsen/logrus"
 )

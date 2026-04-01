@@ -57,7 +57,7 @@ function App() {
           <Heading size={600}>wssocks status</Heading>
         </Pane>
         <Pane>
-          <Link className="github-link" href="https://github.com/genshen/wssocks" target="_blank" marginRight={12}>
+          <Link className="github-link" href="https://github.com/rep1ace/wssocks" target="_blank" marginRight={12}>
             <Button marginRight={8} appearance="minimal">
               <GitRepoIcon color="base" marginRight={8} />
               <Text color="dark">Github</Text>

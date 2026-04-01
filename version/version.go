@@ -4,7 +4,7 @@ import (
 	"flag"
 	"fmt"
 	"github.com/genshen/cmds"
-	"github.com/genshen/wssocks/wss"
+	"github.com/rep1ace/wssocks/wss"
 )
 
 const VERSION = wss.CoreVersion
@@ -42,6 +42,6 @@ func (v *version) Run() error {
 	fmt.Printf("build time: %s\n", buildTime)
 	fmt.Printf("build by: %s\n", buildGoVersion)
 	fmt.Println("Author: genshen<genshenchu@gmail.com>")
-	fmt.Println("github: https://github.com/genshen/wssocks")
+	fmt.Println("github: https://github.com/rep1ace/wssocks")
 	return nil
 }

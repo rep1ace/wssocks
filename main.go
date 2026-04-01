@@ -4,9 +4,9 @@ import (
 	"errors"
 	"flag"
 	"github.com/genshen/cmds"
-	_ "github.com/genshen/wssocks/cmd/client"
-	_ "github.com/genshen/wssocks/cmd/server"
-	_ "github.com/genshen/wssocks/version"
+	_ "github.com/rep1ace/wssocks/cmd/client"
+	_ "github.com/rep1ace/wssocks/cmd/server"
+	_ "github.com/rep1ace/wssocks/version"
 	log "github.com/sirupsen/logrus"
 )
 

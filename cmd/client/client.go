@@ -12,7 +12,7 @@ import (
 	"time"
 
 	"github.com/genshen/cmds"
-	cl "github.com/genshen/wssocks/client"
+	cl "github.com/rep1ace/wssocks/client"
 	log "github.com/sirupsen/logrus"
 )
 

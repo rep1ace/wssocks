@@ -1,4 +1,4 @@
-module github.com/genshen/wssocks
+module github.com/rep1ace/wssocks
 
 go 1.13
 

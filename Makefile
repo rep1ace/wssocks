@@ -1,11 +1,11 @@
-PACKAGE=github.com/genshen/wssocks
+PACKAGE=github.com/rep1ace/wssocks
 
 .PHONY: clean all
 
 
-LDFLAGS= -v -ldflags "-X 'github.com/genshen/wssocks/version.buildHash=`git rev-parse HEAD`' \
- -X 'github.com/genshen/wssocks/version.buildTime=`date`' \
- -X 'github.com/genshen/wssocks/version.buildGoVersion=`go version | cut -f 3,4 -d" "`'"
+LDFLAGS= -v -ldflags "-X 'github.com/rep1ace/wssocks/version.buildHash=`git rev-parse HEAD`' \
+ -X 'github.com/rep1ace/wssocks/version.buildTime=`date`' \
+ -X 'github.com/rep1ace/wssocks/version.buildGoVersion=`go version | cut -f 3,4 -d" "`'"
 
 all: wssocks-linux-amd64 wssocks-linux-arm64 wssocks-darwin-amd64 wssocks-darwin-arm64 wssocks-windows-amd64.exe
 

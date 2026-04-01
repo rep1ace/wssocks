@@ -2,7 +2,7 @@ package status
 
 import (
 	"encoding/json"
-	"github.com/genshen/wssocks/wss"
+	"github.com/rep1ace/wssocks/wss"
 	"net/http"
 	"time"
 )

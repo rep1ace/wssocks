@@ -1,10 +1,10 @@
 # wssocks
 
-![build](https://github.com/genshen/wssocks/workflows/Go/badge.svg)
-[![Go Report Card](https://goreportcard.com/badge/github.com/genshen/wssocks)](https://goreportcard.com/report/github.com/genshen/wssocks)
-![Docker Image Size (latest by date)](https://img.shields.io/docker/image-size/genshen/wssocks?logo=docker&sort=date)
-![Docker Image Version (latest semver)](https://img.shields.io/docker/v/genshen/wssocks?sort=semver&logo=docker)
-![Docker Pulls](https://img.shields.io/docker/pulls/genshen/wssocks?logo=docker)
+![build](https://github.com/rep1ace/wssocks/workflows/Go/badge.svg)
+[![Go Report Card](https://goreportcard.com/badge/github.com/rep1ace/wssocks)](https://goreportcard.com/report/github.com/rep1ace/wssocks)
+![Docker Image Size (latest by date)](https://img.shields.io/docker/image-size/rep1ace/wssocks?logo=docker&sort=date)
+![Docker Image Version (latest semver)](https://img.shields.io/docker/v/rep1ace/wssocks?sort=semver&logo=docker)
+![Docker Pulls](https://img.shields.io/docker/pulls/rep1ace/wssocks?logo=docker)
 
 > socks5 over websocket.
 
@@ -26,7 +26,7 @@ cd cmd/server; statik --src=../../status-web/build/; cd ../../
 go build
 go install
 ```
-You can also download it from [release](https://github.com/genshen/wssocks/releases) page.
+You can also download it from [release](https://github.com/rep1ace/wssocks/releases) page.
 
 ## Quick start
 
@@ -89,7 +89,7 @@ At client side, we can then use `wss://example.com:1088` as remote address, for 
 
 Method 2:
 Use nginx reverse proxy, enable ssl and specific certificate file and certificate key file in nginx config.
-For more information, see issue [#11](https://github.com/genshen/wssocks/issues/11#issuecomment-669324542)).
+For more information, see issue [#11](https://github.com/rep1ace/wssocks/issues/11#issuecomment-669324542)).
 
 ### Server status
 In version 0.5.0, we can enable statue page of server by passing `--status` flag at server side (status page is disabled by default).  
