@@ -13,15 +13,21 @@ import (
 )
 
 type HttpClient struct {
-	wsc    *WebSocketClient
-	record *ConnRecord
+	provider WebSocketClientProvider
+	record   *ConnRecord
 }
 
-func NewHttpProxy(wsc *WebSocketClient, cr *ConnRecord) HttpClient {
-	return HttpClient{wsc: wsc, record: cr}
+func NewHttpProxy(provider WebSocketClientProvider, cr *ConnRecord) HttpClient {
+	return HttpClient{provider: provider, record: cr}
 }
 
 func (client *HttpClient) ServeHTTP(w http.ResponseWriter, req *http.Request) {
+	wsc := client.provider.Current()
+	if wsc == nil {
+		http.Error(w, "wssocks tunnel unavailable", http.StatusServiceUnavailable)
+		return
+	}
+
 	type Done struct {
 		tell bool
 		err  error
@@ -36,7 +42,7 @@ func (client *HttpClient) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	defer conn.Close()
 	defer jack.Flush()
 
-	proxy := client.wsc.NewProxy(nil, nil, nil)
+	proxy := wsc.NewProxy(nil, nil, nil)
 	proxy.onData = func(id ksuid.KSUID, data ServerData) {
 		if data.Tag == TagEstOk || data.Tag == TagEstErr {
 			continued <- data.Tag
@@ -55,7 +61,7 @@ func (client *HttpClient) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 
 	// establish with header fixme record
 	if !req.URL.IsAbs() {
-		client.wsc.RemoveProxy(proxy.Id)
+		wsc.RemoveProxy(proxy.Id)
 		w.WriteHeader(403)
 		_, _ = w.Write([]byte("This is a proxy server. Does not respond to non-proxy requests."))
 		return
@@ -68,10 +74,10 @@ func (client *HttpClient) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	host, _ := client.parseUrl(req.Method, req.Proto, req.URL)
 	HttpRequestHeader(&headerBuffer, req)
 
-	if err := proxy.Establish(client.wsc, headerBuffer.Bytes(), ProxyTypeHttp, host); err != nil { // fixme default port
+	if err := proxy.Establish(wsc, headerBuffer.Bytes(), ProxyTypeHttp, host); err != nil { // fixme default port
 		log.Error("write header error:", err)
-		client.wsc.RemoveProxy(proxy.Id)
-		if err := client.wsc.TellClose(proxy.Id); err != nil {
+		wsc.RemoveProxy(proxy.Id)
+		if err := wsc.TellClose(proxy.Id); err != nil {
 			log.Error("close error", err)
 		}
 		return
@@ -84,11 +90,11 @@ func (client *HttpClient) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	}
 
 	// copy request body data
-	writer := NewWebSocketWriter(&client.wsc.ConcurrentWebSocket, proxy.Id, context.Background())
+	writer := NewWebSocketWriter(&wsc.ConcurrentWebSocket, proxy.Id, context.Background())
 	if _, err := io.Copy(writer, req.Body); err != nil {
 		log.Error("write body error:", err)
-		client.wsc.RemoveProxy(proxy.Id)
-		if err := client.wsc.TellClose(proxy.Id); err != nil {
+		wsc.RemoveProxy(proxy.Id)
+		if err := wsc.TellClose(proxy.Id); err != nil {
 			log.Error("close error", err)
 		}
 		return
@@ -96,10 +102,10 @@ func (client *HttpClient) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
-	if err := client.wsc.WriteProxyMessage(ctx, proxy.Id, TagNoMore, nil); err != nil {
+	if err := wsc.WriteProxyMessage(ctx, proxy.Id, TagNoMore, nil); err != nil {
 		log.Error("write body error:", err)
-		client.wsc.RemoveProxy(proxy.Id)
-		if err := client.wsc.TellClose(proxy.Id); err != nil {
+		wsc.RemoveProxy(proxy.Id)
+		if err := wsc.TellClose(proxy.Id); err != nil {
 			log.Error("close error", err)
 		}
 		return
@@ -107,9 +113,9 @@ func (client *HttpClient) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 
 	// finished
 	d := <-done // fixme add timeout
-	client.wsc.RemoveProxy(proxy.Id)
+	wsc.RemoveProxy(proxy.Id)
 	if d.tell {
-		if err := client.wsc.TellClose(proxy.Id); err != nil {
+		if err := wsc.TellClose(proxy.Id); err != nil {
 			log.Error(err)
 		}
 	}

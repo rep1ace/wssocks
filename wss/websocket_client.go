@@ -4,13 +4,62 @@ import (
 	"context"
 	"encoding/base64"
 	"encoding/json"
+	"fmt"
 	"github.com/segmentio/ksuid"
+	"io"
 	"net/http"
 	"nhooyr.io/websocket"
 	"nhooyr.io/websocket/wsjson"
 	"sync"
 	"time"
 )
+
+type HandshakeError struct {
+	StatusCode int
+	FinalURL   string
+	FinalPath  string
+	Err        error
+}
+
+func (e *HandshakeError) Error() string {
+	if e == nil {
+		return ""
+	}
+	if e.FinalURL != "" {
+		return fmt.Sprintf("websocket dial failed with status %d at %s: %v", e.StatusCode, e.FinalURL, e.Err)
+	}
+	return fmt.Sprintf("websocket dial failed with status %d: %v", e.StatusCode, e.Err)
+}
+
+func (e *HandshakeError) Unwrap() error {
+	if e == nil {
+		return nil
+	}
+	return e.Err
+}
+
+func newHandshakeError(resp *http.Response, err error) error {
+	if resp == nil {
+		return err
+	}
+
+	handshakeErr := &HandshakeError{
+		StatusCode: resp.StatusCode,
+		Err:        err,
+	}
+	if resp.Request != nil && resp.Request.URL != nil {
+		handshakeErr.FinalURL = resp.Request.URL.String()
+		handshakeErr.FinalPath = resp.Request.URL.Path
+		if handshakeErr.FinalPath == "" {
+			handshakeErr.FinalPath = "/"
+		}
+	}
+	if resp.Body != nil {
+		_, _ = io.Copy(io.Discard, io.LimitReader(resp.Body, 1024))
+		_ = resp.Body.Close()
+	}
+	return handshakeErr
+}
 
 // WebSocketClient is a collection of proxy clients.
 // It can add/remove proxy clients from this collection,
@@ -32,17 +81,18 @@ func (wsc *WebSocketClient) ConnSize() int {
 // Establish websocket connection.
 // And initialize proxies container.
 func NewWebSocketClient(ctx context.Context, addr string, hc *http.Client, header http.Header) (*WebSocketClient, error) {
-	ws, _, err := websocket.Dial(ctx, addr, &websocket.DialOptions{HTTPClient: hc, HTTPHeader: header})
+	ws, resp, err := websocket.Dial(ctx, addr, &websocket.DialOptions{HTTPClient: hc, HTTPHeader: header})
 	if err != nil {
-		return nil, err
+		return nil, newHandshakeError(resp, err)
 	}
-	return &WebSocketClient{
-		ConcurrentWebSocket: ConcurrentWebSocket{
-			WsConn: ws,
-		},
-		cancel:  nil,
-		proxies: make(map[ksuid.KSUID]*ProxyClient),
-	}, nil
+	concurrent := NewConcurrentWebSocket(ws)
+	client := &WebSocketClient{
+		ConcurrentWebSocket: concurrent,
+		cancel:              nil,
+		proxies:             make(map[ksuid.KSUID]*ProxyClient),
+	}
+	client.ConcurrentWebSocket.start()
+	return client, nil
 }
 
 // create a new proxy with unique id
@@ -77,7 +127,9 @@ func (wsc *WebSocketClient) TellClose(id ksuid.KSUID) error {
 	}
 	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
 	defer cancel()
-	if err := wsjson.Write(ctx, wsc.WsConn, &finish); err != nil {
+	if err := wsc.enqueueWrite(ctx, func(ctx context.Context, conn *websocket.Conn) error {
+		return wsjson.Write(ctx, conn, &finish)
+	}); err != nil {
 		return err
 	}
 	return nil

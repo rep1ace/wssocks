@@ -12,6 +12,7 @@ import (
 )
 
 var StoppedError = errors.New("listener stopped")
+var ErrNoActiveTunnel = errors.New("no active websocket tunnel")
 
 // client part of wssocks
 type Client struct {
@@ -73,7 +74,7 @@ func (client *Client) Reply(conn net.Conn, enableHttp bool) ([]byte, int, string
 }
 
 // listen on local address:port and forward socks5 requests to wssocks server.
-func (client *Client) ListenAndServe(record *ConnRecord, wsc *WebSocketClient, address string, enableHttp bool, onConnected func()) error {
+func (client *Client) ListenAndServe(record *ConnRecord, provider WebSocketClientProvider, address string, enableHttp bool, onConnected func()) error {
 	netListener, err := net.Listen("tcp", address)
 	if err != nil {
 		return err
@@ -116,6 +117,11 @@ func (client *Client) ListenAndServe(record *ConnRecord, wsc *WebSocketClient, a
 			defer record.Update(ConnStatus{IsNew: false, Address: addr, Type: proxyType})
 
 			// on connection established, copy data now.
+			wsc := provider.Current()
+			if wsc == nil {
+				log.Warn("rejecting local connection because no websocket tunnel is active")
+				return
+			}
 			if err := client.transData(wsc, conn, firstSendData, proxyType, addr); err != nil {
 				log.Error("trans error: ", err)
 			}
@@ -147,8 +153,8 @@ func (client *Client) transData(wsc *WebSocketClient, conn *net.TCPConn, firstSe
 	// tell server to establish connection
 	if err := proxy.Establish(wsc, firstSendData, proxyType, addr); err != nil {
 		wsc.RemoveProxy(proxy.Id)
-        err := wsc.TellClose(proxy.Id)
-        if err != nil {
+		err := wsc.TellClose(proxy.Id)
+		if err != nil {
 			log.Error("close error", err)
 		}
 		return err
@@ -162,7 +168,7 @@ func (client *Client) transData(wsc *WebSocketClient, conn *net.TCPConn, firstSe
 		if err != nil {
 			log.Error("write error: ", err)
 		}
-        done <- Done{true, err}
+		done <- Done{true, err}
 	}()
 	defer writer.CloseWsWriter(cancel) // cancel data writing
 

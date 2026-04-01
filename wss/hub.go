@@ -1,9 +1,7 @@
 package wss
 
 import (
-	"context"
 	"github.com/segmentio/ksuid"
-	"nhooyr.io/websocket/wsjson"
 	"sync"
 )
 
@@ -37,6 +35,8 @@ func (h *Hub) Close() {
 		proxy.ProxyIns.Close(false)
 		delete(h.connPool, id)
 	}
+	// Stop the dedicated websocket writer goroutine during hub teardown.
+	h.close()
 }
 
 // add a tcp connection to connection pool.
@@ -87,9 +87,5 @@ func (h *Hub) tellClosed(id ksuid.KSUID) error {
 		Type: WsTpClose,
 		Data: nil,
 	}
-	// fixme lock or NextWriter
-	if err := wsjson.Write(context.TODO(), h.WsConn, &finish); err != nil {
-		return err
-	}
-	return nil
+	return h.WriteWSJSON(&finish)
 }
