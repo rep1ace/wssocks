@@ -1,6 +1,6 @@
 
 <a name="v0.6.0"></a>
-## [v0.6.0](https://github.com/genshen/wssocks/compare/v0.5.0...v0.6.0)
+## [v0.6.0](https://github.com/rep1ace/wssocks/compare/v0.5.0...v0.6.0)
 
 > 2023-07-31
 
@@ -37,16 +37,16 @@
 
 ### Merge
 
-* **client:** Merge pull request [#69](https://github.com/genshen/wssocks/issues/69) from genshen/remove-client-Wait-parameter
-* **client:** Merge pull request [#68](https://github.com/genshen/wssocks/issues/68) from genshen/fix-error-passing-in-client
-* **client:** Merge pull request [#54](https://github.com/genshen/wssocks/issues/54) from genshen/feature-client-wait-with-error
-* **github-action:** Merge pull request [#67](https://github.com/genshen/wssocks/issues/67) from genshen/ci-create-release
-* **server:** Merge pull request [#57](https://github.com/genshen/wssocks/issues/57) from genshen/fix-http-proxy-panic
-* **status:** Merge pull request [#45](https://github.com/genshen/wssocks/issues/45) from genshen/bump-status-web-dependencies
+* **client:** Merge pull request [#69](https://github.com/rep1ace/wssocks/issues/69) from genshen/remove-client-Wait-parameter
+* **client:** Merge pull request [#68](https://github.com/rep1ace/wssocks/issues/68) from genshen/fix-error-passing-in-client
+* **client:** Merge pull request [#54](https://github.com/rep1ace/wssocks/issues/54) from genshen/feature-client-wait-with-error
+* **github-action:** Merge pull request [#67](https://github.com/rep1ace/wssocks/issues/67) from genshen/ci-create-release
+* **server:** Merge pull request [#57](https://github.com/rep1ace/wssocks/issues/57) from genshen/fix-http-proxy-panic
+* **status:** Merge pull request [#45](https://github.com/rep1ace/wssocks/issues/45) from genshen/bump-status-web-dependencies
 
 
 <a name="v0.5.0"></a>
-## [v0.5.0](https://github.com/genshen/wssocks/compare/v0.5.0-rc.3...v0.5.0)
+## [v0.5.0](https://github.com/rep1ace/wssocks/compare/v0.5.0-rc.3...v0.5.0)
 
 > 2021-01-25
 
@@ -69,7 +69,7 @@
 
 
 <a name="v0.5.0-rc.3"></a>
-## [v0.5.0-rc.3](https://github.com/genshen/wssocks/compare/v0.5.0-rc.2...v0.5.0-rc.3)
+## [v0.5.0-rc.3](https://github.com/rep1ace/wssocks/compare/v0.5.0-rc.2...v0.5.0-rc.3)
 
 > 2021-01-08
 
@@ -97,7 +97,7 @@
 
 
 <a name="v0.5.0-rc.2"></a>
-## [v0.5.0-rc.2](https://github.com/genshen/wssocks/compare/v0.5.0-rc.1...v0.5.0-rc.2)
+## [v0.5.0-rc.2](https://github.com/rep1ace/wssocks/compare/v0.5.0-rc.1...v0.5.0-rc.2)
 
 > 2021-01-02
 
@@ -116,7 +116,7 @@
 
 ### Fix
 
-* **server:** fix compiling error of no package "github.com/genshen/wssocks/cmd/server/statik"
+* **server:** fix compiling error of no package "github.com/rep1ace/wssocks/cmd/server/statik"
 
 ### Refactor
 
@@ -124,7 +124,7 @@
 
 
 <a name="v0.5.0-rc.1"></a>
-## [v0.5.0-rc.1](https://github.com/genshen/wssocks/compare/v0.5.0-beta.3...v0.5.0-rc.1)
+## [v0.5.0-rc.1](https://github.com/rep1ace/wssocks/compare/v0.5.0-beta.3...v0.5.0-rc.1)
 
 > 2021-01-02
 
@@ -163,7 +163,7 @@
 
 
 <a name="v0.5.0-beta.3"></a>
-## [v0.5.0-beta.3](https://github.com/genshen/wssocks/compare/v0.5.0-beta.2...v0.5.0-beta.3)
+## [v0.5.0-beta.3](https://github.com/rep1ace/wssocks/compare/v0.5.0-beta.2...v0.5.0-beta.3)
 
 > 2020-10-03
 
@@ -194,7 +194,7 @@
 
 
 <a name="v0.5.0-beta.2"></a>
-## [v0.5.0-beta.2](https://github.com/genshen/wssocks/compare/v0.5.0-beta...v0.5.0-beta.2)
+## [v0.5.0-beta.2](https://github.com/rep1ace/wssocks/compare/v0.5.0-beta...v0.5.0-beta.2)
 
 > 2020-08-23
 
@@ -227,15 +227,15 @@
 
 ### Merge
 
-* Merge pull request [#25](https://github.com/genshen/wssocks/issues/25) from genshen/feature-ssl-tsl-support
+* Merge pull request [#25](https://github.com/rep1ace/wssocks/issues/25) from genshen/feature-ssl-tsl-support
 
 ### Pull Requests
 
-* Merge pull request [#27](https://github.com/genshen/wssocks/issues/27) from genshen/fix-server-crashed-if-client-killed
+* Merge pull request [#27](https://github.com/rep1ace/wssocks/issues/27) from genshen/fix-server-crashed-if-client-killed
 
 
 <a name="v0.5.0-beta"></a>
-## [v0.5.0-beta](https://github.com/genshen/wssocks/compare/v0.4.1...v0.5.0-beta)
+## [v0.5.0-beta](https://github.com/rep1ace/wssocks/compare/v0.4.1...v0.5.0-beta)
 
 > 2020-08-06
 
@@ -300,9 +300,9 @@
 
 ### Merge
 
-* Merge pull request [#18](https://github.com/genshen/wssocks/issues/18) from genshen/feature-more-specified-context
-* Merge pull request [#15](https://github.com/genshen/wssocks/issues/15) from genshen/feature-web-status
-* Merge pull request [#13](https://github.com/genshen/wssocks/issues/13) from genshen/fix-send-on-closed-channel
+* Merge pull request [#18](https://github.com/rep1ace/wssocks/issues/18) from genshen/feature-more-specified-context
+* Merge pull request [#15](https://github.com/rep1ace/wssocks/issues/15) from genshen/feature-web-status
+* Merge pull request [#13](https://github.com/rep1ace/wssocks/issues/13) from genshen/fix-send-on-closed-channel
 
 ### Refactor
 
@@ -321,8 +321,8 @@
 
 ### Pull Requests
 
-* Merge pull request [#10](https://github.com/genshen/wssocks/issues/10) from genshen/websocket-lib-nhooyr.io/websocket
-* Merge pull request [#8](https://github.com/genshen/wssocks/issues/8) from DefinitlyEvil/master
+* Merge pull request [#10](https://github.com/rep1ace/wssocks/issues/10) from genshen/websocket-lib-nhooyr.io/websocket
+* Merge pull request [#8](https://github.com/rep1ace/wssocks/issues/8) from DefinitlyEvil/master
 
 ### BREAKING CHANGE
 
@@ -336,7 +336,7 @@ go version less then 1.12 (including 1.12) is not supported from this commit.
 
 
 <a name="v0.4.1"></a>
-## [v0.4.1](https://github.com/genshen/wssocks/compare/v0.4.0...v0.4.1)
+## [v0.4.1](https://github.com/rep1ace/wssocks/compare/v0.4.0...v0.4.1)
 
 > 2020-02-24
 
@@ -352,7 +352,7 @@ go version less then 1.12 (including 1.12) is not supported from this commit.
 
 
 <a name="v0.4.0"></a>
-## [v0.4.0](https://github.com/genshen/wssocks/compare/v0.3.0...v0.4.0)
+## [v0.4.0](https://github.com/rep1ace/wssocks/compare/v0.3.0...v0.4.0)
 
 > 2020-02-11
 
@@ -376,7 +376,7 @@ go version less then 1.12 (including 1.12) is not supported from this commit.
 
 
 <a name="v0.3.0"></a>
-## [v0.3.0](https://github.com/genshen/wssocks/compare/v0.3.0-alpha.2...v0.3.0)
+## [v0.3.0](https://github.com/rep1ace/wssocks/compare/v0.3.0-alpha.2...v0.3.0)
 
 > 2019-09-01
 
@@ -408,7 +408,7 @@ go version less then 1.12 (including 1.12) is not supported from this commit.
 
 
 <a name="v0.3.0-alpha.2"></a>
-## [v0.3.0-alpha.2](https://github.com/genshen/wssocks/compare/v0.3.0-alpha...v0.3.0-alpha.2)
+## [v0.3.0-alpha.2](https://github.com/rep1ace/wssocks/compare/v0.3.0-alpha...v0.3.0-alpha.2)
 
 > 2019-08-27
 
@@ -427,7 +427,7 @@ go version less then 1.12 (including 1.12) is not supported from this commit.
 
 
 <a name="v0.3.0-alpha"></a>
-## [v0.3.0-alpha](https://github.com/genshen/wssocks/compare/v0.2.1...v0.3.0-alpha)
+## [v0.3.0-alpha](https://github.com/rep1ace/wssocks/compare/v0.2.1...v0.3.0-alpha)
 
 > 2019-08-26
 
@@ -443,8 +443,8 @@ go version less then 1.12 (including 1.12) is not supported from this commit.
 
 ### Merge
 
-* Merge pull request [#7](https://github.com/genshen/wssocks/issues/7) from genshen/feature-http-proxy
-* **ticker:** Merge pull request [#6](https://github.com/genshen/wssocks/issues/6) from genshen/remove-ticker
+* Merge pull request [#7](https://github.com/rep1ace/wssocks/issues/7) from genshen/feature-http-proxy
+* **ticker:** Merge pull request [#6](https://github.com/rep1ace/wssocks/issues/6) from genshen/remove-ticker
 
 ### Perf
 
@@ -457,7 +457,7 @@ go version less then 1.12 (including 1.12) is not supported from this commit.
 
 
 <a name="v0.2.1"></a>
-## [v0.2.1](https://github.com/genshen/wssocks/compare/v0.2.0...v0.2.1)
+## [v0.2.1](https://github.com/rep1ace/wssocks/compare/v0.2.0...v0.2.1)
 
 > 2019-06-16
 
@@ -480,7 +480,7 @@ go version less then 1.12 (including 1.12) is not supported from this commit.
 
 ### Merge
 
-* **logs:** Merge pull request [#5](https://github.com/genshen/wssocks/issues/5) from genshen/dev
+* **logs:** Merge pull request [#5](https://github.com/rep1ace/wssocks/issues/5) from genshen/dev
 
 ### Refactor
 
@@ -488,7 +488,7 @@ go version less then 1.12 (including 1.12) is not supported from this commit.
 
 
 <a name="v0.2.0"></a>
-## [v0.2.0](https://github.com/genshen/wssocks/compare/v0.1.0...v0.2.0)
+## [v0.2.0](https://github.com/rep1ace/wssocks/compare/v0.1.0...v0.2.0)
 
 > 2019-04-11
 
@@ -515,11 +515,11 @@ go version less then 1.12 (including 1.12) is not supported from this commit.
 
 ### Pull Requests
 
-* Merge pull request [#2](https://github.com/genshen/wssocks/issues/2) from genshen/dev
+* Merge pull request [#2](https://github.com/rep1ace/wssocks/issues/2) from genshen/dev
 
 
 <a name="v0.1.0"></a>
-## [v0.1.0](https://github.com/genshen/wssocks/compare/v0.1.0-vpn...v0.1.0)
+## [v0.1.0](https://github.com/rep1ace/wssocks/compare/v0.1.0-vpn...v0.1.0)
 
 > 2019-03-03
 
@@ -545,7 +545,7 @@ go version less then 1.12 (including 1.12) is not supported from this commit.
 
 ### Merge
 
-* Merge pull request [#1](https://github.com/genshen/wssocks/issues/1) from genshen/dev
+* Merge pull request [#1](https://github.com/rep1ace/wssocks/issues/1) from genshen/dev
 
 ### Refactor
 
