@@ -9,7 +9,6 @@ import (
 	"io"
 	"net/http"
 	"nhooyr.io/websocket"
-	"nhooyr.io/websocket/wsjson"
 	"sync"
 	"time"
 )
@@ -83,16 +82,28 @@ func (wsc *WebSocketClient) ConnSize() int {
 func NewWebSocketClient(ctx context.Context, addr string, hc *http.Client, header http.Header) (*WebSocketClient, error) {
 	ws, resp, err := websocket.Dial(ctx, addr, &websocket.DialOptions{HTTPClient: hc, HTTPHeader: header})
 	if err != nil {
-		return nil, newHandshakeError(resp, err)
+		handshakeErr := newHandshakeError(resp, err)
+		if resp != nil && resp.StatusCode == http.StatusUpgradeRequired {
+			conn, fallbackErr := newHTTPPollClientConn(ctx, addr, hc, header)
+			if fallbackErr == nil {
+				return newWebSocketClientFromConn(conn), nil
+			}
+			return nil, fmt.Errorf("%w; http poll fallback failed: %v", handshakeErr, fallbackErr)
+		}
+		return nil, handshakeErr
 	}
-	concurrent := NewConcurrentWebSocket(ws)
+	return newWebSocketClientFromConn(ws), nil
+}
+
+func newWebSocketClientFromConn(conn messageConn) *WebSocketClient {
+	concurrent := NewConcurrentWebSocket(conn)
 	client := &WebSocketClient{
 		ConcurrentWebSocket: concurrent,
 		cancel:              nil,
 		proxies:             make(map[ksuid.KSUID]*ProxyClient),
 	}
 	client.ConcurrentWebSocket.start()
-	return client, nil
+	return client
 }
 
 // create a new proxy with unique id
@@ -127,8 +138,8 @@ func (wsc *WebSocketClient) TellClose(id ksuid.KSUID) error {
 	}
 	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
 	defer cancel()
-	if err := wsc.enqueueWrite(ctx, func(ctx context.Context, conn *websocket.Conn) error {
-		return wsjson.Write(ctx, conn, &finish)
+	if err := wsc.enqueueWrite(ctx, func(ctx context.Context, conn messageConn) error {
+		return writeJSONMessage(ctx, conn, &finish)
 	}); err != nil {
 		return err
 	}
@@ -148,7 +159,9 @@ func (wsc *WebSocketClient) RemoveProxy(id ksuid.KSUID) {
 func (wsc *WebSocketClient) ListenIncomeMsg(readLimit int64) error {
 	ctx, can := context.WithCancel(context.Background())
 	wsc.cancel = can
-	wsc.WsConn.SetReadLimit(readLimit)
+	if limiter, ok := wsc.WsConn.(interface{ SetReadLimit(int64) }); ok {
+		limiter.SetReadLimit(readLimit)
+	}
 
 	for {
 		// check stop first

@@ -7,8 +7,6 @@ import (
 
 	"github.com/segmentio/ksuid"
 	log "github.com/sirupsen/logrus"
-	"nhooyr.io/websocket"
-	"nhooyr.io/websocket/wsjson"
 )
 
 const (
@@ -46,8 +44,8 @@ func (p *ProxyClient) Establish(wsc *WebSocketClient, firstSendData []byte, prox
 
 	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
 	defer cancel()
-	if err := wsc.enqueueWrite(ctx, func(ctx context.Context, conn *websocket.Conn) error {
-		return wsjson.Write(ctx, conn, &WebSocketMessage{
+	if err := wsc.enqueueWrite(ctx, func(ctx context.Context, conn messageConn) error {
+		return writeJSONMessage(ctx, conn, &WebSocketMessage{
 			Type: WsTpEst,
 			Id:   p.Id.String(),
 			Data: estMsg,

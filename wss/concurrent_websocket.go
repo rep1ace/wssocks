@@ -4,12 +4,12 @@ import (
 	"context"
 	"encoding/base64"
 	"errors"
+	"strings"
 	"sync"
 	"time"
 
 	"github.com/segmentio/ksuid"
 	"nhooyr.io/websocket"
-	"nhooyr.io/websocket/wsjson"
 )
 
 const (
@@ -26,13 +26,13 @@ type ConcurrentWebSocketInterface interface {
 
 type wsWriteRequest struct {
 	ctx  context.Context
-	fn   func(context.Context, *websocket.Conn) error
+	fn   func(context.Context, messageConn) error
 	done chan error
 }
 
 // ConcurrentWebSocket serializes every outbound write onto a single goroutine.
 type ConcurrentWebSocket struct {
-	WsConn *websocket.Conn
+	WsConn messageConn
 
 	writeQueue chan wsWriteRequest
 	closeCh    chan struct{}
@@ -44,7 +44,7 @@ type ConcurrentWebSocket struct {
 	writeErr error
 }
 
-func NewConcurrentWebSocket(conn *websocket.Conn) ConcurrentWebSocket {
+func NewConcurrentWebSocket(conn messageConn) ConcurrentWebSocket {
 	return ConcurrentWebSocket{
 		WsConn:     conn,
 		writeQueue: make(chan wsWriteRequest, defaultWebSocketWriteQueueSize),
@@ -137,10 +137,14 @@ func (wsc *ConcurrentWebSocket) close() {
 func (wsc *ConcurrentWebSocket) WSClose() error {
 	wsc.setWriteErr(ErrWebSocketClosed)
 	wsc.close()
-	return wsc.WsConn.Close(websocket.StatusNormalClosure, "")
+	err := wsc.WsConn.Close(websocket.StatusNormalClosure, "")
+	if err != nil && (errors.Is(err, context.Canceled) || strings.Contains(err.Error(), "WebSocket closed")) {
+		return nil
+	}
+	return err
 }
 
-func (wsc *ConcurrentWebSocket) enqueueWrite(ctx context.Context, fn func(context.Context, *websocket.Conn) error) error {
+func (wsc *ConcurrentWebSocket) enqueueWrite(ctx context.Context, fn func(context.Context, messageConn) error) error {
 	if ctx == nil {
 		ctx = context.Background()
 	}
@@ -171,15 +175,15 @@ func (wsc *ConcurrentWebSocket) enqueueWrite(ctx context.Context, fn func(contex
 	}
 }
 
-func (wsc *ConcurrentWebSocket) enqueueWriteTimeout(fn func(context.Context, *websocket.Conn) error) error {
+func (wsc *ConcurrentWebSocket) enqueueWriteTimeout(fn func(context.Context, messageConn) error) error {
 	ctx, cancel := context.WithTimeout(context.Background(), defaultWebSocketWriteTimeout)
 	defer cancel()
 	return wsc.enqueueWrite(ctx, fn)
 }
 
 func (wsc *ConcurrentWebSocket) WriteWSJSON(data interface{}) error {
-	return wsc.enqueueWriteTimeout(func(ctx context.Context, conn *websocket.Conn) error {
-		return wsjson.Write(ctx, conn, data)
+	return wsc.enqueueWriteTimeout(func(ctx context.Context, conn messageConn) error {
+		return writeJSONMessage(ctx, conn, data)
 	})
 }
 
@@ -203,8 +207,8 @@ func (wsc *ConcurrentWebSocket) WriteProxyMessage(ctx context.Context, id ksuid.
 		Type: WsTpData,
 		Data: ProxyData{Tag: tag, DataBase64: dataBase64},
 	}
-	return wsc.enqueueWrite(ctx, func(ctx context.Context, conn *websocket.Conn) error {
-		return wsjson.Write(ctx, conn, &jsonData)
+	return wsc.enqueueWrite(ctx, func(ctx context.Context, conn messageConn) error {
+		return writeJSONMessage(ctx, conn, &jsonData)
 	})
 }
 

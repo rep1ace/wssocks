@@ -2,8 +2,6 @@ package wss
 
 import (
 	"context"
-	"nhooyr.io/websocket"
-	"nhooyr.io/websocket/wsjson"
 )
 
 // version of protocol.
@@ -21,23 +19,23 @@ type VersionNeg struct {
 // negotiate client and server version
 // after websocket connection is established,
 // client can receive a message from server with server version number.
-func ExchangeVersion(ctx context.Context, wsConn *websocket.Conn) (VersionNeg, error) {
+func ExchangeVersion(ctx context.Context, wsConn messageConn) (VersionNeg, error) {
 	var versionRec VersionNeg
 	versionServer := VersionNeg{Version: CoreVersion, VersionCode: VersionCode}
-	if err := wsjson.Write(ctx, wsConn, &versionServer); err != nil {
+	if err := writeJSONMessage(ctx, wsConn, &versionServer); err != nil {
 		return versionRec, err
 	}
-	if err := wsjson.Read(ctx, wsConn, &versionRec); err != nil {
+	if err := readJSONMessage(ctx, wsConn, &versionRec); err != nil {
 		return versionRec, err
 	}
 	return versionRec, nil
 }
 
 // send version information to client from server
-func NegVersionServer(ctx context.Context, wsConn *websocket.Conn, enableStatusPage bool) error {
+func NegVersionServer(ctx context.Context, wsConn messageConn, enableStatusPage bool) error {
 	// read from client
 	var versionClient VersionNeg
-	if err := wsjson.Read(ctx, wsConn, &versionClient); err != nil {
+	if err := readJSONMessage(ctx, wsConn, &versionClient); err != nil {
 		return err
 	}
 	// send to client
@@ -47,5 +45,5 @@ func NegVersionServer(ctx context.Context, wsConn *websocket.Conn, enableStatusP
 		VersionCode:      VersionCode,
 		EnableStatusPage: enableStatusPage,
 	} // todo more information
-	return wsjson.Write(ctx, wsConn, &versionServer)
+	return writeJSONMessage(ctx, wsConn, &versionServer)
 }

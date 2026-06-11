@@ -6,8 +6,6 @@ import (
 	"sync"
 	"testing"
 	"time"
-
-	"nhooyr.io/websocket"
 )
 
 func TestConcurrentWebSocketSerializesWrites(t *testing.T) {
@@ -25,7 +23,7 @@ func TestConcurrentWebSocketSerializesWrites(t *testing.T) {
 		wg.Add(1)
 		go func(i int) {
 			defer wg.Done()
-			err := wsc.enqueueWrite(context.Background(), func(ctx context.Context, conn *websocket.Conn) error {
+			err := wsc.enqueueWrite(context.Background(), func(ctx context.Context, conn messageConn) error {
 				mu.Lock()
 				active++
 				if active > maxActive {
@@ -76,7 +74,7 @@ func TestConcurrentWebSocketDrainsPendingWritesOnClose(t *testing.T) {
 	releaseFirst := make(chan struct{})
 	firstDone := make(chan error, 1)
 	go func() {
-		firstDone <- wsc.enqueueWrite(context.Background(), func(ctx context.Context, conn *websocket.Conn) error {
+		firstDone <- wsc.enqueueWrite(context.Background(), func(ctx context.Context, conn messageConn) error {
 			close(firstStarted)
 			<-releaseFirst
 			return nil
@@ -87,7 +85,7 @@ func TestConcurrentWebSocketDrainsPendingWritesOnClose(t *testing.T) {
 	secondExecuted := make(chan struct{}, 1)
 	secondDone := make(chan error, 1)
 	go func() {
-		secondDone <- wsc.enqueueWrite(context.Background(), func(ctx context.Context, conn *websocket.Conn) error {
+		secondDone <- wsc.enqueueWrite(context.Background(), func(ctx context.Context, conn messageConn) error {
 			secondExecuted <- struct{}{}
 			return nil
 		})

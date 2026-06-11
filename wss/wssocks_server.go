@@ -16,13 +16,14 @@ type WebsocksServerConfig struct {
 }
 
 type ServerWS struct {
-	config WebsocksServerConfig
-	hc     *HubCollection
+	config       WebsocksServerConfig
+	hc           *HubCollection
+	httpSessions *httpPollSessionStore
 }
 
 // return a a function handling websocket requests from the peer.
 func NewServeWS(hc *HubCollection, config WebsocksServerConfig) *ServerWS {
-	return &ServerWS{config: config, hc: hc}
+	return &ServerWS{config: config, hc: hc, httpSessions: newHTTPPollSessionStore()}
 }
 
 func (s *ServerWS) ServeHTTP(w http.ResponseWriter, r *http.Request) {
@@ -33,28 +34,38 @@ func (s *ServerWS) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if isHTTPPollRequest(r) {
+		s.serveHTTPPoll(w, r)
+		return
+	}
+
 	wc, err := websocket.Accept(w, r, nil)
 	if err != nil {
 		log.Error(err)
 		return
 	}
 	defer wc.Close(websocket.StatusNormalClosure, "the sky is falling")
+	s.serveConn(r.Context(), wc)
+}
 
-	ctx, cancel := context.WithCancel(r.Context())
+func (s *ServerWS) serveConn(parent context.Context, conn messageConn) {
+	ctx, cancel := context.WithCancel(parent)
 	defer cancel()
 
 	// negotiate version with client.
-	if err := NegVersionServer(ctx, wc, s.config.EnableStatusPage); err != nil {
+	if err := NegVersionServer(ctx, conn, s.config.EnableStatusPage); err != nil {
 		return
 	}
 
-	hub := s.hc.NewHub(wc)
+	hub := s.hc.NewHub(conn)
 	defer s.hc.RemoveProxy(hub.id)
 	defer hub.Close()
 	// read messages from webSocket
-	wc.SetReadLimit(1 << 23) // 8 MiB
+	if limiter, ok := conn.(interface{ SetReadLimit(int64) }); ok {
+		limiter.SetReadLimit(1 << 23) // 8 MiB
+	}
 	for {
-		msgType, p, err := wc.Read(ctx) // fixme context
+		msgType, p, err := conn.Read(ctx) // fixme context
 		// if WebSocket is closed by some reason, then this func will return,
 		// and 'done' channel will be set, the outer func will reach to the end.
 		if err != nil && err != io.EOF {

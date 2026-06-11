@@ -5,8 +5,6 @@ import (
 	"time"
 
 	"github.com/segmentio/ksuid"
-	"nhooyr.io/websocket"
-	"nhooyr.io/websocket/wsjson"
 )
 
 type HeartBeat struct {
@@ -51,8 +49,8 @@ func (hb *HeartBeat) StartWithInterval(ctx context.Context, interval, writeTimeo
 				Data: nil,
 			}
 			writeCtx, cancel := context.WithTimeout(ctx, writeTimeout)
-			err := hb.wsc.enqueueWrite(writeCtx, func(ctx context.Context, conn *websocket.Conn) error {
-				return wsjson.Write(ctx, conn, &heartBeats)
+			err := hb.wsc.enqueueWrite(writeCtx, func(ctx context.Context, conn messageConn) error {
+				return writeJSONMessage(ctx, conn, &heartBeats)
 			})
 			cancel()
 			if err != nil {

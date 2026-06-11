@@ -15,3 +15,6 @@ wssocks-linux-amd64
 
 # Output of the go coverage tool, specifically when used with LiteIDE
 *.out
+
+wssocks-linux-amd64
+wssocks-linux-arm64

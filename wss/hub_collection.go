@@ -2,7 +2,6 @@ package wss
 
 import (
 	"github.com/segmentio/ksuid"
-	"nhooyr.io/websocket"
 	"sync"
 )
 
@@ -22,7 +21,7 @@ func NewHubCollection() *HubCollection {
 }
 
 // create a hub and add it to hub collection
-func (hc *HubCollection) NewHub(conn *websocket.Conn) *Hub {
+func (hc *HubCollection) NewHub(conn messageConn) *Hub {
 	hc.mutex.Lock()
 	defer hc.mutex.Unlock()
 

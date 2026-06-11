@@ -46,7 +46,7 @@ func TestPingIsNotBlockedByQueuedWrites(t *testing.T) {
 	release := make(chan struct{})
 	writeDone := make(chan error, 1)
 	go func() {
-		writeDone <- client.enqueueWrite(context.Background(), func(ctx context.Context, conn *websocket.Conn) error {
+		writeDone <- client.enqueueWrite(context.Background(), func(ctx context.Context, conn messageConn) error {
 			close(started)
 			<-release
 			return nil
